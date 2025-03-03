@@ -44,6 +44,7 @@ namespace CuKernelPrecompiler
 			// Register events
 			listBox_tracks.SelectedIndexChanged += (sender, e) => ToggleUI();
 			textBox_kernelString.TextChanged += (sender, e) => ToggleUI();
+			pictureBox_waveform.Click += (sender, e) => ExportWav();
 
 
 			// Init. audio files
@@ -104,6 +105,30 @@ namespace CuKernelPrecompiler
 			// Button kernel run
 			button_kernelRun.Enabled = SelectedTrack != null && DataOnCuda && KernelLoaded;
 
+		}
+
+		public void ExportWav()
+		{
+			// Abort if not CTRL down
+			if (Control.ModifierKeys != Keys.Control)
+			{
+				return;
+			}
+
+			// OFD at MyMusic
+			SaveFileDialog sfd = new SaveFileDialog();
+			sfd.InitialDirectory = Environment.GetFolderPath(Environment.SpecialFolder.MyMusic);
+			sfd.Filter = "WAV files (*.wav)|*.wav";
+			sfd.FileName = SelectedTrack?.Name ?? "track";
+
+			// Export
+			if (sfd.ShowDialog() == DialogResult.OK)
+			{
+				SelectedTrack?.ExportAudioWav(sfd.FileName);
+			}
+
+			// MsgBox
+			MessageBox.Show("Exported to " + sfd.FileName);
 		}
 
 

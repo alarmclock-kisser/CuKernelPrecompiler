@@ -27,6 +27,9 @@ namespace CuKernelPrecompiler
 		public Dictionary<long, List<CudaDeviceVariable<float>>> DeviceFloatVars = [];
 		public Dictionary<long, List<CudaDeviceVariable<float2>>> DeviceComplexVars = [];
 
+
+		public int LogStep = 10000;
+
 		// ~~~~~ ~~~~~ ~~~~~ CONSTRUCTOR ~~~~~ ~~~~~ ~~~~~ \\
 		public CudaHandling(string repopath, ListBox? logbox = null, ComboBox? devicesBox = null, Label? vramLabel = null, ProgressBar? vramBar = null, ListBox? kernelBox = null, Label? kernelLabel = null)
 		{
@@ -188,6 +191,7 @@ namespace CuKernelPrecompiler
 			Stopwatch stopwatch = Stopwatch.StartNew();
 			Log("Started pushing " + chunks.Count + " chunks of type " + typeof(T).Name);
 
+			int c = LogStep - 1;
 			foreach (var chunk in chunks)
 			{
 				int length = chunk.Length;
@@ -199,7 +203,12 @@ namespace CuKernelPrecompiler
 				// Copy data
 				devChunk.CopyToDevice(chunk);
 
-				Log("Pushed chunk " + devChunks.Count + " / " + chunks.Count, "", 2, true);
+				
+				c++;
+				if (c %  LogStep == 0)
+				{
+					Log("Pushed chunk " + devChunks.Count + " / " + chunks.Count, "", 2, true);
+				}
 			}
 
 			// Get first pointer
@@ -239,6 +248,7 @@ namespace CuKernelPrecompiler
 			{
 				if (DeviceFloatVars.ContainsKey(firstPointer))
 				{
+					int c = LogStep - 1;
 					foreach (var devChunk in DeviceFloatVars[firstPointer])
 					{
 						int length = devChunk.Size;
@@ -251,7 +261,11 @@ namespace CuKernelPrecompiler
 						// Dispose device memory
 						devChunk.Dispose();
 
-						Log("Pulled chunk " + chunks.Count + " / " + DeviceFloatVars[firstPointer].Count, "", 2, true);
+						c++;
+						if (c %  LogStep == 0)
+						{
+							Log("Pulled chunk " + chunks.Count + " / " + DeviceFloatVars[firstPointer].Count, "", 2, true);
+						}
 					}
 
 					// Remove from dictionary
@@ -262,6 +276,7 @@ namespace CuKernelPrecompiler
 			{
 				if (DeviceComplexVars.ContainsKey(firstPointer))
 				{
+					int c = LogStep - 1;
 					foreach (var devChunk in DeviceComplexVars[firstPointer])
 					{
 						int length = devChunk.Size;
@@ -274,7 +289,11 @@ namespace CuKernelPrecompiler
 						// Dispose device memory
 						devChunk.Dispose();
 
-						Log("Pulled chunk " + chunks.Count + " / " + DeviceComplexVars[firstPointer].Count, "", 2);
+						c++;
+						if (c %  LogStep == 0)
+						{
+							Log("Pulled chunk " + chunks.Count + " / " + DeviceComplexVars[firstPointer].Count, "", 2, true);
+						}
 					}
 
 					// Remove from dictionary
@@ -420,6 +439,7 @@ namespace CuKernelPrecompiler
 			Stopwatch sw = Stopwatch.StartNew();
 			Log("Performing FFT on " + inputVars.Count + " input variables");
 
+			int c = LogStep - 1;
 			// Perform FFT on each input
 			for (int i = 0; i < inputVars.Count; i++)
 			{
@@ -439,7 +459,11 @@ namespace CuKernelPrecompiler
 				outputVars.Add(outputVar);
 
 				// Log progress
-				Log("Performed FFT on input " + i + " / " + inputVars.Count, "", 2, true);
+				c++;
+				if (c %  LogStep == 0)
+				{
+					Log("Performed FFT on input " + i + " / " + inputVars.Count, "", 2, true);
+				}
 			}
 
 
@@ -470,6 +494,7 @@ namespace CuKernelPrecompiler
 			Stopwatch sw = Stopwatch.StartNew();
 			Log("Performing IFFT on " + inputVars.Count + " input variables");
 
+			int c = LogStep - 1;
 			// Perform IFFT on each input
 			for (int i = 0; i < inputVars.Count; i++)
 			{
@@ -489,7 +514,11 @@ namespace CuKernelPrecompiler
 				outputVars.Add(outputVar);
 
 				// Log progress
-				Log("Performed IFFT on input " + i + " / " + inputVars.Count, "", 2, true);
+				c++;
+				if (c %  LogStep == 0)
+				{
+					Log("Performed IFFT on input " + i + " / " + inputVars.Count, "", 2, true);
+				}
 			}
 
 			sw.Stop();
@@ -886,6 +915,7 @@ namespace CuKernelPrecompiler
 			Stopwatch sw = Stopwatch.StartNew();
 			Log("Started running kernel " + Kernel.KernelName + " on " + pointers.Count + " input variables");
 
+			int c = LogStep - 1;
 			// Run for each pointer
 			for (int i = 0; i < pointers.Count; i++)
 			{
@@ -899,10 +929,19 @@ namespace CuKernelPrecompiler
 				}
 
 				// Log progress
-				Log("Ran kernel on input " + i + " / " + pointers.Count, "", 2, true);
+				c++;
+				if (c %  LogStep == 0)
+				{
+					Log("Ran kernel on input " + i + " / " + pointers.Count, "", 2, true);
+				}
 			}
 
+			sw.Stop();
+			long deltaMicros = sw.ElapsedTicks / (Stopwatch.Frequency / (1000L * 1000L));
+			Log("Ran kernel on " + pointers.Count + " input variables within " + deltaMicros.ToString("N0") + " µs", "", 1, true);
 
+			// Vram info
+			GetVramInfo();
 		}
 
 	}

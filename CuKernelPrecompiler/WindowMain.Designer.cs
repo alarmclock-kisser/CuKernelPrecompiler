@@ -250,7 +250,7 @@
 			numericUpDown_chunkSize.Name = "numericUpDown_chunkSize";
 			numericUpDown_chunkSize.Size = new Size(128, 23);
 			numericUpDown_chunkSize.TabIndex = 12;
-			numericUpDown_chunkSize.Value = new decimal(new int[] { 65536, 0, 0, 0 });
+			numericUpDown_chunkSize.Value = new decimal(new int[] { 8192, 0, 0, 0 });
 			numericUpDown_chunkSize.ValueChanged += numericUpDown_chunkSize_ValueChanged;
 			// 
 			// button_cudaMove
@@ -350,7 +350,7 @@
 			numericUpDown_param1.Name = "numericUpDown_param1";
 			numericUpDown_param1.Size = new Size(128, 23);
 			numericUpDown_param1.TabIndex = 14;
-			numericUpDown_param1.Value = new decimal(new int[] { 1, 0, 0, 0 });
+			numericUpDown_param1.Value = new decimal(new int[] { 12, 0, 0, 65536 });
 			// 
 			// button_kernelLoad
 			// 
