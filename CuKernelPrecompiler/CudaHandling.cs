@@ -28,7 +28,7 @@ namespace CuKernelPrecompiler
 		public Dictionary<long, List<CudaDeviceVariable<float2>>> DeviceComplexVars = [];
 
 
-		public int LogStep = 10000;
+		public int LogStep = 5000;
 
 		// ~~~~~ ~~~~~ ~~~~~ CONSTRUCTOR ~~~~~ ~~~~~ ~~~~~ \\
 		public CudaHandling(string repopath, ListBox? logbox = null, ComboBox? devicesBox = null, Label? vramLabel = null, ProgressBar? vramBar = null, ListBox? kernelBox = null, Label? kernelLabel = null)
